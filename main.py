@@ -4,9 +4,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-  return 'Hello, World!:{}'.format( sys.version_info[0] )
+  return 'Hello, World!:{}.{}'.format( sys.version_info[0], sys.version_info[1] )
 
-@app.route('/process/',methods=['GET','POST'])
+@app.route('/process/', methods=['GET','POST'])
 def process():
 	return 'Process'
 
