@@ -5,5 +5,9 @@ app = Flask(__name__)
 def hello_world():
   return 'Hello, World!'
 
+@app.route('/process')
+def process():
+  return 'process'
+
 if __name__ == '__main__':
   app.run()
