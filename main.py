@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 app = Flask(__name__)
 
 @app.route('/')
@@ -27,8 +27,8 @@ def processCube():
       falseColorMap = cv2.merge((pcList[0],pcList[1],pcList[2]))
 
       imageDict = dict()
-      imageDict['rgb'] = visibleImage
-      imageDict['falseColorMap'] = falseColorMap
+      imageDict['rgb'] = visibleImage.mean()
+      imageDict['falseColorMap'] = falseColorMap.mean()
 
       imageDictPack = pickle.dumps( imageDict )
       return imageDictPack
