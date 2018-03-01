@@ -32,10 +32,12 @@ def processCube():
       visibleImage = cv2.merge((imageCube[0],imageCube[1],imageCube[2]))
       falseColorMap = cv2.merge((pcList[0],pcList[1],pcList[2]))
 
+		cv2.imwrite('visibleTemp.JPG', visibleImage)
+		cv2.imwrite('falseColorMapTemp.JPG', falseColorMap)
       imageDict = dict()
       imageDict['rgb'] = visibleImage
       imageDict['falseColorMap'] = falseColorMap
-
+		
       imageDictPack = pickle.dumps( imageDict )
       return imageDictPack
       #mean = unpackedData.mean()
