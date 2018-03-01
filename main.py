@@ -13,37 +13,42 @@ def hello_world():
 
 @app.route('/process', methods=['GET','POST'])
 def processCube():
-    packedData = request.data
-    imageCube = pickle.loads( packedData )
+	packedData = request.data
+	imageCube = pickle.loads( packedData )
     if( isinstance(imageCube, np.ndarray) ):
-      # Keep image dimensions
-      bands, row, column = imageCube.shape
-      # tranform image cube to image matrix
-      imageMatrix = []
-      for i in range(bands):
-        imageMatrix.append(imageCube[i].flatten())
+		# Keep image dimensions
+		bands, row, column = imageCube.shape
+		# tranform image cube to image matrix
+		imageMatrix = []
+		for i in range(bands):
+			imageMatrix.append(imageCube[i].flatten())
+		imageMatrix = np.array( imageMatrix )
+		# perform pca
+		eigenVector, pcList = pca( imageMatrix, row, column )
+		# Pack data for response
+		visibleImage = cv2.merge((imageCube[0],imageCube[1],imageCube[2]))
+		falseColorMap = cv2.merge((pcList[0],pcList[1],pcList[2]))
 
-      imageMatrix = np.array( imageMatrix )
-
-      # perform pca
-      eigenVector, pcList = pca( imageMatrix, row, column )
-
-      # Pack data for response
-      visibleImage = cv2.merge((imageCube[0],imageCube[1],imageCube[2]))
-      falseColorMap = cv2.merge((pcList[0],pcList[1],pcList[2]))
-
-	  cv2.imwrite('visibleTemp.JPG', visibleImage)
-	  cv2.imwrite('falseColorMapTemp.JPG', falseColorMap)
-      imageDict = dict()
-      imageDict['rgb'] = visibleImage
-      imageDict['falseColorMap'] = falseColorMap
+		imageDict = dict()
+		imageDict['rgb'] = visibleImage
+		imageDict['falseColorMap'] = falseColorMap
+	
+		#	Save images to temp files
+		cv2.imwrite( 'visibleTemp.JPG', visibleImage )
+		cv2.imwrite( 'falseTemp.JPG', falseColorMap )
+	#	Save images to blob
+	#	Get url to images
+	
+	#	Connect with Cosmos DB
+	#	Construct Data dict to insert in Cosmos DB( MongoDB )
+	#	Insert to Cosmos DB
 		
-      imageDictPack = pickle.dumps( imageDict )
-      return imageDictPack
+		imageDictPack = pickle.dumps( imageDict )
+		return imageDictPack
       #mean = unpackedData.mean()
       #return 'cube received: {}'.format( mean )
-    else:
-      return 'Data type ERROR'
+	  else:
+		return 'Data type ERROR'
 
 
 if __name__ == '__main__':
