@@ -1,6 +1,8 @@
-import sys
-import platform
-from flask import Flask
+from flask import Flask, request
+from pca import pca
+import cv2
+import numpy as np
+import pickle
 app = Flask(__name__)
 
 @app.route('/')
