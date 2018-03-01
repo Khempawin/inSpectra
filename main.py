@@ -36,7 +36,7 @@ def processCube():
 
                 #       Generate tag: time stamp
                 date = datetime.datetime.now()
-                fileTag = 'y{}_m{}_d{}_hr{}_min{}_sec{}.JPG'.format( time.year, time.month, time.day, time.hour, time.minute, time.second )
+                fileTag = 'y{}_m{}_d{}_hr{}_min{}_sec{}.JPG'.format( date.year, date.month, date.day, date.hour, date.minute, date.second )
 
                 #	Save images to temp files
                 cv2.imwrite( 'visibleTemp.JPG', visibleImage )
