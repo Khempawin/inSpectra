@@ -5,6 +5,7 @@ import numpy as np
 import pickle
 import sys
 import platform
+import datetime
 app = Flask(__name__)
 
 @app.route('/')
@@ -33,6 +34,10 @@ def processCube():
                 imageDict['rgb'] = visibleImage
                 imageDict['falseColorMap'] = falseColorMap
 
+                #       Generate tag: time stamp
+                date = datetime.datetime.now()
+                fileTag = 'y{}_m{}_d{}_hr{}_min{}_sec{}.JPG'.format( time.year, time.month, time.day, time.hour, time.minute, time.second )
+
                 #	Save images to temp files
                 cv2.imwrite( 'visibleTemp.JPG', visibleImage )
                 cv2.imwrite( 'falseTemp.JPG', falseColorMap )
@@ -42,9 +47,8 @@ def processCube():
                 #	Connect with Cosmos DB
                 #	Construct Data dict to insert in Cosmos DB( MongoDB )
                 #	Insert to Cosmos DB
-
-                imageDictPack = pickle.dumps( imageDict )
-                return imageDictPack
+                
+                return fileTag
         else:
                 return 'Data type ERROR'
 
