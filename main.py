@@ -32,7 +32,11 @@ def hello_world():
 @app.route('/process', methods=['GET','POST'])
 def processCube():
         packedData = request.data
-        imageCube = pickle.loads( packedData )
+        dataToBeProcessed = pickle.loads( packedData )
+
+        if( not isinstance(dataToBeProcessed, dict) and not ('imageCube' in dataToBeProcessed.keys()) ):
+                return 'Data dict ERROR'
+        imageCube = dataToBeProcessed[ 'imageCube' ]
         if( isinstance(imageCube, np.ndarray) ):
                 # Keep image dimensions
                 bands, row, column = imageCube.shape
@@ -49,7 +53,7 @@ def processCube():
                 
                 #       Generate tag: time stamp
                 date = datetime.datetime.now()
-                fileTag = 'y{}_m{}_d{}_hr{}_min{}_sec{}'.format( date.year, date.month, date.day, date.hour, date.minute, date.second )
+                fileTag = 'plant_{}_area{}_y{}_m{}_d{}_hr{}_min{}_sec{}'.format( dataToBeProcessed[ 'plant' ], dataToBeProcessed[ 'area' ], date.year, date.month, date.day, date.hour, date.minute, date.second )
 
                 #	Save images to temp files
                 cv2.imwrite( '_visibleTemp.PNG', visibleImage )
@@ -75,8 +79,9 @@ def processCube():
                 pcaUrl = getImageBlobUrl(DefaultContainer, fileTag+'_false_pca')
 
                 #       delete Temp files
-                #os.remove( 'visible'+fileTag )
-                #os.remove( 'false'+fileTag )
+                #os.remove( '_visibleTemp.PNG' )
+                #os.remove( '_falseTemp.PNG' )
+                #os.remove( '_zfalseTemp.PNG' )
                 
                 #	Connect with Cosmos DB
                 client = MongoClient( MongoConnectionString )
@@ -86,6 +91,8 @@ def processCube():
                 
                 #	Construct Data dict to insert in Cosmos DB( MongoDB )
                 recordDict = dict()
+                recordDict[ 'plant' ] = dataToBeProcessed[ 'plant' ]
+                recordDict[ 'area' ] = dataToBeProcessed[ 'area' ]
                 recordDict[ 'timestamp' ] = date
                 recordDict[ 'visible' ] = visibleUrl
                 recordDict[ 'false' ] = falseUrl
